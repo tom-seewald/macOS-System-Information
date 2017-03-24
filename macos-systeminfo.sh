@@ -7,7 +7,9 @@ DATE=`date +%m-%d-%Y`
 NAME="$(scutil --get ComputerName)-($DATE)"
 
 # Get to correct directory from inside the .app
-cd $(echo "$PWD" | sed 's#macOS-Systeminfo.app/Contents/Resources$##')
+dir=$(echo "$PWD" | sed 's#macOS-Systeminfo.app/Contents/Resources$##')
+
+cd "$dir"
 
 # Create and set output directory
 output="$PWD"/system-information/"$NAME"
@@ -16,7 +18,10 @@ mkdir -p "$output" 2> /dev/null
 echo "Gathering System Information..."
 
 # JAMF log
-cp /var/log/jamf.log "$output/jamf.txt" 2> /dev/null
+if [ -f "/var/log/jamf.log" ]
+then
+	cp /var/log/jamf.log "$output/jamf.txt" 2> /dev/null
+fi
 
 # Printers and corresponding connection info
 lpstat -s > "$output/printers.txt"
