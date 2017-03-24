@@ -7,11 +7,10 @@ DATE=`date +%m-%d-%Y`
 NAME="$(scutil --get ComputerName)-($DATE)"
 
 # Get to correct directory from inside the .app
-cd ../../..
-dir=$(pwd)
+cd $(echo "$PWD" | sed 's#macOS-Systeminfo.app/Contents/Resources$##')
 
 # Create and set output directory
-output="$dir"/system-information/"$NAME"
+output="$PWD"/system-information/"$NAME"
 mkdir -p "$output" 2> /dev/null
 
 echo "Gathering System Information..."
