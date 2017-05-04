@@ -12,15 +12,38 @@ dir=$(echo "$PWD" | sed 's#macOS-Systeminfo.app/Contents/Resources$##')
 cd "$dir"
 
 # Create and set output directory
-output="$PWD"/system-information/"$NAME"
-mkdir -p "$output" 2> /dev/null
+output="$PWD"/"$NAME"
+
+if [ -d "$output" ]
+then
+    rm -rf "$output"
+fi
+
+if [ -f "$output".zip ]
+then
+    rm -rf "$output".zip
+fi
+
+mkdir -p "$output"
 
 echo "Gathering System Information..."
 
 # JAMF log
 if [ -f "/var/log/jamf.log" ]
 then
-	cp /var/log/jamf.log "$output/jamf.txt" 2> /dev/null
+	cp /var/log/jamf.log "$output/jamf.log"
+fi
+
+# System log
+if [ -f "/var/log/system.log" ]
+then
+    cp /var/log/system.log "$output/system.log"
+fi
+
+# Wifi log
+if [ -f "/var/log/wifi.log" ]
+then
+    cp /var/log/wifi.log "$output/wifi.log"
 fi
 
 # Printers and corresponding connection info
@@ -30,10 +53,21 @@ lpstat -s > "$output/printers.txt"
 networksetup -listallhardwareports > "$output/network-devices.txt"
 
 # System Profile
-system_profiler -xml > "$output/system-profile.spx" 2> /dev/null
+system_profiler -xml > "$output/system-profile.spx"
+
+# Compress folder
+echo "Compressing folder..."
+
+zip -r -X "$output".zip $output > /dev/null
+
+# If compression was successful, remove the original folder
+if [ $? -eq "0" ]
+then
+    rm -rf "$output"
+fi
 
 printf "\r\n"
-echo "The System Report has been placed in $output"
+echo "The System Report has been placed in $output.zip"
 printf "\r\n"
 echo "Press Quit To Exit"
 
