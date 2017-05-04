@@ -46,6 +46,9 @@ then
     cp /var/log/wifi.log "$output/wifi.log"
 fi
 
+# Kernel Panic Reports
+cp /Library/Logs/DiagnosticReports/Kernel*.panic "$output"
+
 # Printers and corresponding connection info
 lpstat -s > "$output/printers.txt"
 
@@ -58,17 +61,21 @@ system_profiler -xml > "$output/system-profile.spx"
 # Compress folder
 echo "Compressing folder..."
 
-zip -r -X "$output".zip $output > /dev/null
+zip -r -X "$NAME".zip "$NAME" > /dev/null
 
 # If compression was successful, remove the original folder
 if [ $? -eq "0" ]
 then
     rm -rf "$output"
+    printf "\r\n"
+    echo "The System Report has been placed in $output.zip"
+else
+    printf "\r\n"
+    echo "Compression Failed!"
+    printf "\r\n"
+    echo "The System Report has been placed in $output"
 fi
 
 printf "\r\n"
-echo "The System Report has been placed in $output.zip"
-printf "\r\n"
 echo "Press Quit To Exit"
-
 exit
