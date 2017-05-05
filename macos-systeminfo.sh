@@ -1,18 +1,18 @@
 #!/bin/bash
 
 # Date format
-DATE=`date +%m-%d-%Y`
+time=`date +%m-%d-%Y`
 
 # Set name to be computername-date
-NAME="$(scutil --get ComputerName)-($DATE)"
+folder="$(scutil --get ComputerName)-($time)"
 
 # Get to correct directory from inside the .app
 dir=$(echo "$PWD" | sed 's#macOS-Systeminfo.app/Contents/Resources$##')
 
-cd "$dir"
-
 # Create and set output directory
-output="$PWD"/"$NAME"
+output="$dir""$folder"
+
+cd "$dir"
 
 if [ -d "$output" ]
 then
@@ -61,12 +61,12 @@ system_profiler -xml > "$output/system-profile.spx"
 # Compress folder
 echo "Compressing folder..."
 
-zip -r -X "$NAME".zip "$NAME" > /dev/null
+zip -r -X "$folder".zip "$folder" > /dev/null
 
 # If compression was successful, remove the original folder
 if [ $? -eq "0" ]
 then
-    rm -rf "$output"
+    rm -rf "$folder"
     printf "\r\n"
     echo "The System Report has been placed in $output.zip"
 else
